@@ -1,10 +1,10 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "org.techtown.capstonedesign"
+        //applicationId "org.techtown.capstonedesign"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -18,6 +18,22 @@ android {
         }
     }
 }
+
+// 기존 플러그인을 삭제.
+task deleteObjectJar(type: Delete){
+    delete 'release/AndroidPlugin.jar'
+}
+
+// from 경로에 위치한 class결과물을 release 폴더에 AndroidPlugin.jar이름으로 위치.
+task exportJar(type: Copy){
+    from('build/intermediates/packaged-classes/release/')
+    into('release/')
+    include('classes.jar')
+    rename('classes.jar', 'AndroidPlugin.jar')
+}
+
+// exportJar 실행시 deleteObjectJar가 실행되도록 의존성 연결.
+exportJar.dependsOn(deleteObjectJar, build)
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
