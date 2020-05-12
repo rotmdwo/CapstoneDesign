@@ -9,15 +9,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
+/*
 import com.pedro.library.AutoPermissions;
 import com.pedro.library.AutoPermissionsListener;
+ */
 import com.unity3d.player.UnityPlayerActivity;
 
-public class MainActivity extends UnityPlayerActivity implements AutoPermissionsListener {
+public class MainActivity extends UnityPlayerActivity /*implements AutoPermissionsListener*/ {
     final int REQUEST_CODE = 101;
     final long minTime = 100;
     final float minDistance = 0;
@@ -29,9 +27,9 @@ public class MainActivity extends UnityPlayerActivity implements AutoPermissions
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
 
-        AutoPermissions.Companion.loadAllPermissions(this, REQUEST_CODE);
+        //AutoPermissions.Companion.loadAllPermissions(this, REQUEST_CODE);
 
         OrientationListener orientationListener = new OrientationListener();
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -42,10 +40,17 @@ public class MainActivity extends UnityPlayerActivity implements AutoPermissions
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         try {
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (location != null) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+            }
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, gpsListener);
         } catch (SecurityException e) {
             e.printStackTrace();
         }
+
+
     }
 
     public double getAzimuth() {
@@ -56,7 +61,6 @@ public class MainActivity extends UnityPlayerActivity implements AutoPermissions
         double[] location = {latitude, longitude};
         return location;
     }
-
 
     class OrientationListener implements SensorEventListener {
 
@@ -100,9 +104,9 @@ public class MainActivity extends UnityPlayerActivity implements AutoPermissions
 
         }
     }
-
+/*
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         AutoPermissions.Companion.parsePermissions(this, requestCode, permissions, this);
@@ -117,4 +121,6 @@ public class MainActivity extends UnityPlayerActivity implements AutoPermissions
     public void onGranted(int i, String[] strings) {
 
     }
+
+ */
 }
