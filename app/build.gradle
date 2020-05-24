@@ -57,4 +57,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.github.pedroSG94:AutoPermissions:1.0.3'
     implementation files('libs\\classes.jar')
+    implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:4.9.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.1.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.5.0'
+
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.42.6'
+
+
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
 }
