@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.OrientationListener;
 import android.widget.ArrayAdapter;
 /*
 import com.pedro.library.AutoPermissions;
@@ -47,8 +46,8 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
     private double longi;
     private double lat;
 
-    SQLiteDatabase destinationDatabase;
-    final String DATABASE_NAME = "Destinations";
+    SQLiteDatabase database;
+    final String DATABASE_NAME = "Database";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,17 +79,35 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
         // 여기부터 Map 부분
         Mapbox.getInstance(this, "MAPBOX_ACCESS_TOKEN");
 
-        destinationDatabase = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
-        destinationDatabase.execSQL("create table if not exists DestinationTable (name text PRIMARY KEY, latitude real, longitude real)");
-        Cursor cursor = destinationDatabase.rawQuery("select name, latitude, longitude from DestinationTable", null);
+        database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
+        database.execSQL("create table if not exists DestinationTable (name text PRIMARY KEY, latitude real, longitude real)");
+        database.execSQL("create table if not exists EndingMessageTable (building text PRIMARY KEY, message text)");
+        Cursor cursor = database.rawQuery("select name, latitude, longitude from DestinationTable", null);
         if (cursor.getCount() == 0) {
-            Location1 location1 = new Location1();
-            location1.insertDataIntoTable(destinationDatabase, "DestinationTable");
+            DB db = new DB();
+            db.insertDataIntoTable(database, "DestinationTable");
+        }
+
+        Cursor cursor1 = database.rawQuery("select building, message from EndingMessageTable", null);
+        if (cursor1.getCount() == 0) {
+            DB db = new DB();
+            db.insertDataIntoTable(database, "EndingMessageTable");
+        }
+    }
+
+    public String getEndingMessage(String destination) {
+        Cursor cursor1 = database.rawQuery("select building, message from EndingMessageTable where building = '" + destination +"'", null);
+        if (cursor1.getCount() > 0) {
+            cursor1.moveToNext();
+            return cursor1.getString(1);
+        } else {
+            return "도착하였습니다 !";
         }
     }
 
     public void setDestination(String destination) {
-        Cursor cursor = destinationDatabase.rawQuery("select name, latitude, longitude from DestinationTable where name like '%" + destination + "%'", null);
+        data.clear();
+        Cursor cursor = database.rawQuery("select name, latitude, longitude from DestinationTable where name like '%" + destination + "%'", null);
         int recordCount = cursor.getCount();
         for (int i = 0 ; i < recordCount ; i++) {
             cursor.moveToNext();
@@ -128,10 +145,10 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
         return log;
     }
 
-    public void findRoute() {
+    public void findRoute(int i) {
         //목적지를 고른다
         // TODO: 원래 리스트 UI 부분인데 지금은 임의로 가장 앞에 있는 것 가져옴. 수정필요
-        dest = data.get(0);
+        dest = data.get(i);
 
         if (latitude != 0) {
             lat = latitude;
