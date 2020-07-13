@@ -35,6 +35,7 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
     double azimuth = 0;
     double latitude = 0;
     double longitude = 0;
+    int locationReloadedCount = 0;
 
     ArrayList<Destination> data = new ArrayList<>();
     ArrayList<Destination> route = new ArrayList<>();
@@ -182,7 +183,7 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
     }
 
     public double[] getLocation() {
-        double[] location = {latitude, longitude};
+        double[] location = {latitude, longitude, locationReloadedCount};
         return location;
     }
 
@@ -211,6 +212,8 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
 
             latitude = latitude_temp;
             longitude = longitude_temp;
+
+            locationReloadedCount++;
         }
 
         @Override
@@ -255,11 +258,11 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
     Handler wHandler = new Handler() {
         public void handleMessage(Message m) {
             if (m.what == 0) {
-                Log.d("asdf", "HI");
+
                 route.clear();
                 Destination[] list;
                 list = (Destination[]) m.obj;
-                Log.d("asdf", "BYE");
+
                 for (Destination destination : list) {
                     if (destination != null) {
                         route.add(destination);
