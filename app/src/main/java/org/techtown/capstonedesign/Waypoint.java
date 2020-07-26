@@ -48,6 +48,9 @@ public class Waypoint extends Thread{
     public void run() {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
+        wlists.clear();
+
+
         String MAPBOX_ACCESS_TOKEN = "pk.eyJ1Ijoia2F0ZTk3MDgxOSIsImEiOiJjazllYXA4a20wMGJ5M3BxYm1kZHR5djF5In0.de_wnEWEQlNgLNSHM95dlg";
         NavigationRoute.builder(context)
                 .accessToken(MAPBOX_ACCESS_TOKEN)
@@ -115,7 +118,7 @@ public class Waypoint extends Thread{
 
         // 목적지가 wlists에 포함 안 되어 있으면 추가
         if (destination.latitude() != wlists.get(wlists.size() - 1).getLatitude() &&
-        destination.longitude() != wlists.get(wlists.size() - 1).getLongitude()) {
+                destination.longitude() != wlists.get(wlists.size() - 1).getLongitude()) {
             Destination subRoute = new Destination(null, 0, destination.latitude(), destination.longitude());
             wlists.add(subRoute);
         }
