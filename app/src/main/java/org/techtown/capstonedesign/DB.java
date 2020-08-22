@@ -143,9 +143,9 @@ public class DB {
             destinationDatabase.execSQL("insert into " + table +
                     "(building, message) values ('제2공학관 27 ', '제2공학관은 25동부터 27동까지로 나뉘며 ‘ㄷ’자 형태로 연결되어 있습니다. 27동에는 공학교육혁신센터와 성균어학원, 우주과학기술연구소, 창업기업 사무실 등이 자리하며, 다양한 세미나실, 연구실, 강의실을 갖추고 있습니다.')");
             destinationDatabase.execSQL("insert into " + table +
-                    "(building, message) values ('제1과학관은 자연과학대학이 주로 사용하는 공간입니다. 제1과학관부터 제2과학관, 기초학문관, 생명공학관까지 연결되어 있어 건물 내에서 자유롭게 이동할 수 있습니다.')");
+                    "(building, message) values ('제1과학관 31동 ', '제1과학관은 자연과학대학이 주로 사용하는 공간입니다. 제1과학관부터 제2과학관, 기초학문관, 생명공학관까지 연결되어 있어 건물 내에서 자유롭게 이동할 수 있습니다.')");
             destinationDatabase.execSQL("insert into " + table +
-                    "(building, message) values ('제2과학관은 자연과학대학이 주로 사용하는 공간입니다. 제1과학관과 기초학문관, 생명공학관이 하나로 연결되어 있어 건물 내에서 자유롭게 이동할 수 있습니다.')");
+                    "(building, message) values ('제2과학관 32동 ', '제2과학관은 자연과학대학이 주로 사용하는 공간입니다. 제1과학관과 기초학문관, 생명공학관이 하나로 연결되어 있어 건물 내에서 자유롭게 이동할 수 있습니다.')");
             destinationDatabase.execSQL("insert into " + table +
                     "(building, message) values ('화학관 ', '화학관은 약학관과 반도체관을 잇는 종합강의동입니다. 이곳은 첨단강의실과 연구실, 라운지 등의 공간과 슈퍼컴퓨터실, 동위원소실험실, 세포배양실 등 연구에 필요한 최신식 시설을 갖추고 있습니다.')");
             destinationDatabase.execSQL("insert into " + table +

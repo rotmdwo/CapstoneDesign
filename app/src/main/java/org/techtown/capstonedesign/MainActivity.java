@@ -124,11 +124,13 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
 
         //길이 판별, 검색 결과가 없는 경우 예외처리 필요
         //boolean flag2 = false;
+        /*
         if(destination.length()<2){
             //flag2 = true;
             data.add(new Destination("검색어 길이가 너무 짧습니다. 2글자 이상 입력해주세요.",0,0,0));
             return;
         }
+         */
 
         if(destination.length()>15){
             //flag2 = true;
