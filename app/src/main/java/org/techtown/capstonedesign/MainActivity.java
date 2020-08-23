@@ -29,6 +29,8 @@ import com.unity3d.player.UnityPlayerActivity;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import org.techtown.capstonedesign.Language;
+
 public class MainActivity extends UnityPlayerActivity /*implements AutoPermissionsListener*/ {
     final int REQUEST_CODE = 101;
     final long minTime = 100;
@@ -53,6 +55,10 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
     final String DATABASE_NAME = "Database";
 
     private Language language = Language.KOREAN;
+
+
+    private String table_name = "DestinationTable";
+    private String message_table_name = "EndingMessageTable";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,34 +93,62 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
 
         // 언어 설정
         String lang = Locale.getDefault().getLanguage();
-        if (lang.equals("ko")) language = Language.KOREAN;
-        else if (lang.equals("en")) language = Language.ENGLISH;
-        else if (lang.equals("zh")) language = Language.CHINESE;
-        else language = Language.OTHERS;
+        if (lang.equals("ko")) {
+            language = Language.KOREAN;
+            table_name = "DestinationTable_KR";
+            message_table_name = "EndingMessageTable_KR";
+        }
+        else if (lang.equals("en")) {
+            language = Language.ENGLISH;
+            table_name = "DestinationTable_EN";
+            message_table_name = "EndingMessageTable_EN";
+        }
+        else if (lang.equals("zh")) {
+            language = Language.CHINESE;
+            table_name = "DestinationTable_EN"; // 이후에 중국어 지원되면 수정
+            message_table_name = "EndingMessageTable_EN";
+        }
+        else if (lang.equals("ja")) {
+            language = Language.JAPANESE;
+            table_name = "DestinationTable_EN"; // 이후에 일본어 지원되면 수정
+            message_table_name = "EndingMessageTable_EN";
+        }
+        else {
+            language = Language.OTHERS;
+            table_name = "DestinationTable_EN";
+            message_table_name = "EndingMessageTable_EN";
+        }
 
+        // 데이터베이스 테이블 생성
         database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
-        database.execSQL("create table if not exists DestinationTable (name text PRIMARY KEY, number integer, latitude real, longitude real)");
-        database.execSQL("create table if not exists EndingMessageTable (building text PRIMARY KEY, message text)");
-        Cursor cursor = database.rawQuery("select name, number, latitude, longitude from DestinationTable", null);
-        if (cursor.getCount() == 0) {
+        database.execSQL("create table if not exists " + table_name + " (name text PRIMARY KEY, number integer, latitude real, longitude real)");
+        database.execSQL("create table if not exists " + message_table_name + " (building text PRIMARY KEY, message text)");
+
+        Cursor cursorBuildingInfo = database.rawQuery("select name, number, latitude, longitude from '" + table_name + "'", null);
+        if (cursorBuildingInfo.getCount() == 0) {
             DB db = new DB();
-            db.insertDataIntoTable(database, "DestinationTable");
+            db.insertDataIntoTable(database, table_name);
         }
 
-        Cursor cursor1 = database.rawQuery("select building, message from EndingMessageTable", null);
-        if (cursor1.getCount() == 0) {
+        Cursor cursorEndingMessage = database.rawQuery("select building, message from '" + message_table_name + "'", null);
+        if (cursorEndingMessage.getCount() == 0) {
             DB db = new DB();
-            db.insertDataIntoTable(database, "EndingMessageTable");
+            db.insertDataIntoTable(database, message_table_name);
         }
+
     }
 
     public String getEndingMessage(String destination) {
-        Cursor cursor1 = database.rawQuery("select building, message from EndingMessageTable where building = '" + destination +"'", null);
-        if (cursor1.getCount() > 0) {
-            cursor1.moveToNext();
-            return cursor1.getString(1);
+        Cursor cursorEndingMessage = database.rawQuery("select building, message from '" + message_table_name + "' where building = '" + destination +"'", null);
+        if (cursorEndingMessage.getCount() > 0) {
+            cursorEndingMessage.moveToNext();
+            return cursorEndingMessage.getString(1);
         } else {
-            return "도착하였습니다 !";
+            if(language == Language.KOREAN){
+                return "도착하였습니다 !";
+            } else{
+                return "Arrived! ";
+            }
         }
     }
 
@@ -123,18 +157,25 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
 
 
         //길이 판별, 검색 결과가 없는 경우 예외처리 필요
-        //boolean flag2 = false;
+        // 검색어 최소글자 수 제한 삭제
         /*
         if(destination.length()<2){
-            //flag2 = true;
-            data.add(new Destination("검색어 길이가 너무 짧습니다. 2글자 이상 입력해주세요.",0,0,0));
+            if(language == Language.KOREAN){
+                data.add(new Destination("검색어 길이가 너무 짧습니다. 2글자 이상 입력해주세요.",0,0,0));
+            }else{
+                data.add(new Destination("The search word is too short. Try to input it over 2.",0,0,0));
+            }
             return;
         }
+
          */
 
         if(destination.length()>15){
-            //flag2 = true;
-            data.add(new Destination("검색어 길이가 너무 깁니다. 15글자 이하로 입력해주세요.",0,0,0));
+            if(language == Language.KOREAN){
+                data.add(new Destination("검색어 길이가 너무 깁니다. 15글자 이하로 입력해주세요.",0,0,0));
+            }else{
+                data.add(new Destination("The search word is too long. Try to input it under 15.",0,0,0));
+            }
             return;
         }
 
@@ -149,7 +190,7 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
 
         //건물이름으로 검색하는 경우
         if(flag==true){
-            Cursor cursor = database.rawQuery("select name, number, latitude, longitude from DestinationTable where name like '%" + destination + "%'", null);
+            Cursor cursor = database.rawQuery("select name, number, latitude, longitude from '" + table_name + "' where name like '%" + destination + "%'", null);
             int recordCount = cursor.getCount();
             for (int i = 0 ; i < recordCount ; i++) {
                 cursor.moveToNext();
@@ -160,7 +201,7 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
         //건물번호로 검색하는 경우
         if(flag == false){
             destination = destination.substring(0,2);
-            Cursor cursor = database.rawQuery("select name, number, latitude, longitude from DestinationTable where number=" + destination, null);
+            Cursor cursor = database.rawQuery("select name, number, latitude, longitude from '" + table_name + "' where number=" + destination, null);
             int recordCount = cursor.getCount();
             for (int i = 0 ; i < recordCount ; i++) {
                 cursor.moveToNext();
@@ -171,7 +212,11 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
 
         //검색 결과가 없는 경우
         if(data.size()==0){
-            data.add(new Destination("검색 결과가 없습니다. 다른 검색어로 다시 검색을 시도해주세요.",0,0,0));
+            if(language == Language.KOREAN){
+                data.add(new Destination("검색 결과가 없습니다. 다른 검색어로 다시 검색을 시도해주세요.",0,0,0));
+            }else{
+                data.add(new Destination("There is no result. Try another search word.",0,0,0));
+            }
         }
     }
 
@@ -242,6 +287,14 @@ public class MainActivity extends UnityPlayerActivity /*implements AutoPermissio
         return location;
     }
 
+    public String getLanguage(){
+        if(language == Language.KOREAN){
+            return "korean";
+        }else{
+            return "english";
+        }
+
+    }
     class OrientationListener implements SensorEventListener {
 
         @Override
